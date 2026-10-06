@@ -14,6 +14,7 @@ import {
   Clock,
   Building2,
   FileText,
+  HelpCircle,
 } from 'lucide-react';
 import { useStudy } from '../context/StudyContext';
 
@@ -38,10 +39,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'subjects', label: 'Subjects & Topics', icon: BookOpen },
-    { id: 'timetable', label: 'Timetable & Schedule', icon: CalendarDays },
+    { id: 'timetable', label: 'Timetable', icon: CalendarDays },
     { id: 'exams', label: 'Exams & Tasks', icon: FileCheck2 },
-    { id: 'analytics', label: 'Analytics & Predictions', icon: BarChart3 },
-    { id: 'ai-coach', label: 'AI Study Coach', icon: Sparkles, badge: 'AI' },
+    { id: 'quizzes', label: 'Module Quizzes', icon: HelpCircle, badge: 'QUIZ' },
+    { id: 'pdf-hub', label: 'Notes & Project PDFs', icon: FileText, badge: 'PDF' },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { id: 'ai-coach', label: 'AI Coach', icon: Sparkles, badge: 'AI' },
   ];
 
   return (
@@ -85,13 +88,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-lg text-slate-900 leading-tight">SIT StudyPlanner</span>
+                <span className="font-bold text-lg text-slate-900 leading-tight">StudyMate</span>
                 <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded">
-                  Mangalore
+                  SIT Mangalore
                 </span>
               </div>
               <p className="text-xs text-slate-500 leading-none mt-0.5">
-                Dynamic Schedule & Progress Intelligence
+                Notes, Projects, Exams & Schedule Intelligence
               </p>
             </div>
           </div>
@@ -143,6 +146,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <Timer className="w-4 h-4 text-indigo-600" />
               <span className="hidden sm:inline">Focus Timer</span>
+            </button>
+
+            {/* Sign Out / Exit button */}
+            <button
+              onClick={logout}
+              className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors cursor-pointer"
+              title="Sign out to return to the SIT Registration & Login Portal"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Sign Out</span>
             </button>
 
             {/* User Profile / Login dropdown */}

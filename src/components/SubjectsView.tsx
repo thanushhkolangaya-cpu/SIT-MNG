@@ -14,9 +14,12 @@ import {
   FileQuestion,
   BookMarked,
   X,
+  FileText,
+  Bot,
 } from 'lucide-react';
 import { useStudy } from '../context/StudyContext';
-import { Subject, Topic, SubjectDifficulty } from '../types';
+import { Subject, Topic, SubjectDifficulty, PdfDocument } from '../types';
+import { PdfViewerModal } from './PdfViewerModal';
 
 export const SubjectsView: React.FC = () => {
   const {
@@ -29,11 +32,17 @@ export const SubjectsView: React.FC = () => {
     toggleTopicCompletion,
     deleteTopic,
     generateAiTopicGuide,
+    generateNotesPdfUrl,
   } = useStudy();
 
   const [expandedSubjectId, setExpandedSubjectId] = useState<string | null>(
     subjects[0]?.id || null
   );
+
+  // PDF Viewer Modal State
+  const [isPdfViewerOpen, setIsPdfViewerOpen] = useState(false);
+  const [viewingDoc, setViewingDoc] = useState<PdfDocument | null>(null);
+  const [pdfDataUrl, setPdfDataUrl] = useState<string | undefined>(undefined);
 
   // Modals state
   const [isAddSubjectOpen, setIsAddSubjectOpen] = useState(false);
@@ -244,17 +253,45 @@ export const SubjectsView: React.FC = () => {
                     <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600">
                       Syllabus Topics Checklist ({totalTopics})
                     </h4>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedSubjectForTopic(subject.id);
-                        setIsAddTopicOpen(true);
-                      }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-blue-600 text-xs font-bold rounded-lg shadow-2xs transition-colors cursor-pointer"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Add Topic to {subject.code}</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const url = generateNotesPdfUrl(subject.id);
+                          setViewingDoc({
+                            id: 'pdf-sub-' + subject.id,
+                            title: `${subject.name} (${subject.code}) - Revision Handbook & Syllabus Notes`,
+                            subjectId: subject.id,
+                            subjectName: subject.name,
+                            category: 'notes',
+                            fileSize: '3.1 MB',
+                            pageCount: 24,
+                            uploadDate: new Date().toISOString().split('T')[0],
+                            tags: ['SIT Mangalore', subject.code, 'Notes', 'Syllabus'],
+                            isPreloaded: false,
+                          });
+                          setPdfDataUrl(url);
+                          setIsPdfViewerOpen(true);
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 text-xs font-bold rounded-lg shadow-2xs transition-colors cursor-pointer"
+                        title="View Official SIT Revision Handbook PDF"
+                      >
+                        <FileText className="w-3.5 h-3.5 text-blue-600" />
+                        <span>Syllabus Notes PDF</span>
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedSubjectForTopic(subject.id);
+                          setIsAddTopicOpen(true);
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg shadow-2xs transition-colors cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Topic</span>
+                      </button>
+                    </div>
                   </div>
 
                   {subject.topics.length === 0 ? (
@@ -327,7 +364,7 @@ export const SubjectsView: React.FC = () => {
                               </div>
 
                               {/* Action Tools */}
-                              <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                              <div className="flex items-center gap-1.5 self-end sm:self-center shrink-0">
                                 {/* AI Topic Cram Sheet button */}
                                 <button
                                   onClick={() => handleOpenAiGuide(subject, topic)}
@@ -685,6 +722,18 @@ export const SubjectsView: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* PDF Revision Notes Viewer Modal */}
+      <PdfViewerModal
+        isOpen={isPdfViewerOpen}
+        onClose={() => {
+          setIsPdfViewerOpen(false);
+          setViewingDoc(null);
+          setPdfDataUrl(undefined);
+        }}
+        document={viewingDoc}
+        pdfDataUrl={pdfDataUrl}
+      />
     </div>
   );
 };

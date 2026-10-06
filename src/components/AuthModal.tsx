@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, GraduationCap, Building2, User, KeyRound, Mail, CheckCircle, Sparkles } from 'lucide-react';
+import { X, GraduationCap, Building2, User, KeyRound, Mail, CheckCircle, Sparkles, Hash } from 'lucide-react';
 import { useStudy } from '../context/StudyContext';
+import { parseSITUSN } from '../utils/usnHelper';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -8,7 +9,7 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
-  const { login, register, allUsers } = useStudy();
+  const { login, register, demoUsers } = useStudy();
   const [mode, setMode] = useState<'login' | 'register'>('login');
 
   // Login form state
@@ -34,12 +35,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       setLoginError('Please enter your SIT USN or College Email');
       return;
     }
-    const ok = login(loginCred, loginPassword);
-    if (ok) {
+    const res = login(loginCred, loginPassword);
+    if (res.success) {
       setLoginError('');
       onClose();
     } else {
-      setLoginError('Invalid credentials');
+      setLoginError(res.error || 'Invalid credentials');
     }
   };
 
@@ -50,7 +51,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       return;
     }
 
-    register(
+    const res = register(
       {
         name: regName.trim(),
         usn: regUsn.trim().toUpperCase(),
@@ -62,14 +63,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         dailyAvailableHours: Number(regDailyHours),
         preferredStudySlots: ['Evening (6:00 PM - 8:30 PM)', 'Night (9:30 PM - 11:30 PM)'],
       },
-      regPassword
+      regPassword || 'password123'
     );
 
-    onClose();
+    if (res.success) {
+      setLoginError('');
+      onClose();
+    } else {
+      setLoginError(res.error || 'Registration failed');
+    }
   };
 
   const handleQuickDemoLogin = (emailOrUsn: string) => {
-    login(emailOrUsn);
+    login(emailOrUsn, 'password123');
     onClose();
   };
 
@@ -138,28 +144,65 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           {mode === 'login' ? (
             <form onSubmit={handleLoginSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  SIT USN or College Email
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  SIT USN (University Seat Number) *
                 </label>
                 <div className="relative">
-                  <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                  <Hash className="w-4 h-4 text-blue-600 absolute left-3 top-3" />
                   <input
                     type="text"
                     value={loginCred}
-                    onChange={(e) => setLoginCred(e.target.value)}
-                    placeholder="e.g. 4SN22CS045 or thanush.sit@srinivasgroup.com"
-                    className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
+                    onChange={(e) => setLoginCred(e.target.value.toUpperCase())}
+                    placeholder="e.g. 4SN22CS045"
+                    className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono font-bold tracking-wider uppercase text-slate-900"
                     required
+                    autoFocus
                   />
                 </div>
-                <span className="text-[11px] text-slate-500 mt-1 block">
-                  Tip: Use USN format (e.g. 4SN22CS045) or email address
-                </span>
+
+                {/* Real-time USN Parser Feedback */}
+                {(() => {
+                  const parsed = parseSITUSN(loginCred);
+                  if (parsed.branchName) {
+                    return (
+                      <div className="mt-1.5 p-1.5 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-900 flex items-center gap-1.5">
+                        <GraduationCap className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                        <span>
+                          <strong>{parsed.branchName}</strong>
+                          {parsed.estimatedSemester ? ` • Sem ${parsed.estimatedSemester}` : ''}
+                        </span>
+                      </div>
+                    );
+                  }
+                  return (
+                    <span className="text-[11px] text-slate-500 mt-1 block">
+                      Tip: Enter your SIT USN (e.g. <strong className="font-mono text-slate-700">4SN22CS045</strong>)
+                    </span>
+                  );
+                })()}
+
+                {/* Quick USN buttons */}
+                <div className="mt-2 flex items-center gap-1 flex-wrap">
+                  <span className="text-[10px] text-slate-400">Quick:</span>
+                  {['4SN22CS045', '4SN23AI018', '4SN21EC062'].map((sampleUsn) => (
+                    <button
+                      key={sampleUsn}
+                      type="button"
+                      onClick={() => {
+                        setLoginCred(sampleUsn);
+                        setLoginPassword('password123');
+                      }}
+                      className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-blue-700 border border-slate-200 cursor-pointer"
+                    >
+                      {sampleUsn}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Password
+                  Password (Optional for Demo)
                 </label>
                 <div className="relative">
                   <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
@@ -167,7 +210,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     type="password"
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
-                    placeholder="Enter your password"
+                    placeholder="Enter password (default: password123)"
                     className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -175,34 +218,40 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg shadow-md transition-all mt-2"
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-lg shadow-md transition-all mt-2 cursor-pointer flex items-center justify-center gap-2"
               >
-                Sign In to SIT Study Planner
+                <Hash className="w-4 h-4" />
+                <span>Login with USN: {loginCred || '4SN...'}</span>
               </button>
 
               {/* Demo Quick Logins */}
               <div className="pt-4 border-t border-slate-200">
                 <p className="text-xs font-semibold text-slate-500 mb-2 flex items-center gap-1">
                   <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Instant Quick Login Demo:</span>
+                  <span>Instant Quick Login Demos:</span>
                 </p>
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemoLogin('4SN22CS045')}
-                  className="w-full text-left p-2.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition-all flex items-center justify-between group"
-                >
-                  <div>
-                    <div className="text-xs font-bold text-blue-950 group-hover:text-blue-700">
-                      Thanush Kolangaya (SIT CSE)
-                    </div>
-                    <div className="text-[11px] text-blue-700 font-mono">
-                      USN: 4SN22CS045 • 5th Semester • 5 Subjects Loaded
-                    </div>
-                  </div>
-                  <span className="text-xs font-bold text-blue-600 bg-white px-2 py-1 rounded shadow-xs">
-                    Use Demo
-                  </span>
-                </button>
+                <div className="space-y-1.5">
+                  {demoUsers.map((dUser) => (
+                    <button
+                      key={dUser.id}
+                      type="button"
+                      onClick={() => handleQuickDemoLogin(dUser.usn)}
+                      className="w-full text-left p-2.5 bg-blue-50/70 hover:bg-blue-100 border border-blue-200 rounded-xl transition-all flex items-center justify-between group cursor-pointer"
+                    >
+                      <div>
+                        <div className="text-xs font-bold text-blue-950 group-hover:text-blue-700">
+                          {dUser.name}
+                        </div>
+                        <div className="text-[11px] text-blue-700 font-mono">
+                          USN: {dUser.usn} • Sem {dUser.semester} • {dUser.department.split(' ')[0]}
+                        </div>
+                      </div>
+                      <span className="text-[11px] font-bold text-blue-600 bg-white px-2 py-0.5 rounded shadow-2xs">
+                        Select
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </form>
           ) : (

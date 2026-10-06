@@ -1,4 +1,4 @@
-import { UserProfile, Subject, Exam, Assignment, WeeklyStudyAvailability, StudySession, StudyLog } from '../types';
+import { UserProfile, Subject, Exam, Assignment, WeeklyStudyAvailability, StudySession, StudyLog, WeeklyClassTimetable } from '../types';
 
 export const INITIAL_USER: UserProfile = {
   id: 'sit-student-01',
@@ -14,7 +14,44 @@ export const INITIAL_USER: UserProfile = {
   streakDays: 6,
   lastStudiedDate: new Date().toISOString().split('T')[0],
   joinedAt: '2024-08-10',
+  password: 'password123',
 };
+
+export const DEMO_USERS: UserProfile[] = [
+  INITIAL_USER,
+  {
+    id: 'sit-student-02',
+    name: 'Ananya Rao',
+    usn: '4SN23AI018',
+    email: 'ananya.sit@srinivasgroup.com',
+    department: 'Artificial Intelligence & Data Science',
+    semester: 3,
+    collegeName: 'Srinivas Institute of Technology, Mangalore',
+    targetCgpa: '9.10',
+    dailyAvailableHours: 4.0,
+    preferredStudySlots: ['Morning (6:30 AM - 8:00 AM)', 'Night (9:00 PM - 11:30 PM)'],
+    streakDays: 9,
+    lastStudiedDate: new Date().toISOString().split('T')[0],
+    joinedAt: '2024-09-01',
+    password: 'password123',
+  },
+  {
+    id: 'sit-student-03',
+    name: 'Karthik Shetty',
+    usn: '4SN21EC062',
+    email: 'karthik.sit@srinivasgroup.com',
+    department: 'Electronics & Communication Engineering',
+    semester: 7,
+    collegeName: 'Srinivas Institute of Technology, Mangalore',
+    targetCgpa: '8.40',
+    dailyAvailableHours: 3.0,
+    preferredStudySlots: ['Evening (6:00 PM - 9:00 PM)'],
+    streakDays: 4,
+    lastStudiedDate: new Date().toISOString().split('T')[0],
+    joinedAt: '2023-08-15',
+    password: 'password123',
+  },
+];
 
 export const INITIAL_SUBJECTS: Subject[] = [
   {
@@ -643,5 +680,74 @@ export const INITIAL_SESSIONS: StudySession[] = [
     status: 'scheduled',
     priority: 'High',
     type: 'Assignment Work',
+  },
+];
+
+export const INITIAL_CLASS_TIMETABLE: WeeklyClassTimetable = [
+  {
+    day: 'Monday',
+    periods: [
+      { periodNumber: 1, time: '09:00 AM - 09:55 AM', subjectId: 'sub-dbms', subjectCode: '21CS51', subjectName: 'Database Management Systems', room: 'LH-302', faculty: 'Prof. Suresh M' },
+      { periodNumber: 2, time: '10:00 AM - 10:55 AM', subjectId: 'sub-os', subjectCode: '21CS52', subjectName: 'Operating Systems', room: 'LH-304', faculty: 'Dr. Ananya Rao' },
+      { periodNumber: 3, time: '11:15 AM - 12:10 PM', subjectId: 'sub-toc', subjectCode: '21CS53', subjectName: 'Theory of Computation', room: 'LH-302', faculty: 'Prof. K. Ramesh' },
+      { periodNumber: 4, time: '12:10 PM - 01:05 PM', subjectId: 'sub-cn', subjectCode: '21CS54', subjectName: 'Computer Networks', room: 'LH-305', faculty: 'Prof. Divya P' },
+      { periodNumber: 5, time: '02:00 PM - 02:55 PM', subjectId: 'sub-fswd', subjectCode: '21CS56', subjectName: 'Full Stack Web Dev', room: 'LH-302', faculty: 'Prof. Karthik S' },
+      { periodNumber: 6, time: '03:00 PM - 03:55 PM', subjectId: 'free', subjectCode: 'LIB', subjectName: 'Library & Tutorial', room: 'Central Library', faculty: 'Staff' },
+    ],
+  },
+  {
+    day: 'Tuesday',
+    periods: [
+      { periodNumber: 1, time: '09:00 AM - 09:55 AM', subjectId: 'sub-os', subjectCode: '21CS52', subjectName: 'Operating Systems', room: 'LH-304', faculty: 'Dr. Ananya Rao' },
+      { periodNumber: 2, time: '10:00 AM - 10:55 AM', subjectId: 'sub-cn', subjectCode: '21CS54', subjectName: 'Computer Networks', room: 'LH-305', faculty: 'Prof. Divya P' },
+      { periodNumber: 3, time: '11:15 AM - 12:10 PM', subjectId: 'sub-dbms', subjectCode: '21CS51', subjectName: 'Database Management Systems', room: 'LH-302', faculty: 'Prof. Suresh M' },
+      { periodNumber: 4, time: '12:10 PM - 01:05 PM', subjectId: 'sub-toc', subjectCode: '21CS53', subjectName: 'Theory of Computation', room: 'LH-302', faculty: 'Prof. K. Ramesh' },
+      { periodNumber: 5, time: '02:00 PM - 02:55 PM', subjectId: 'sub-dbms', subjectCode: '21CSL55', subjectName: 'DBMS & Network Lab (Batch A)', room: 'Lab Block C-201', faculty: 'Prof. Suresh M', isLab: true },
+      { periodNumber: 6, time: '03:00 PM - 03:55 PM', subjectId: 'sub-cn', subjectCode: '21CSL55', subjectName: 'DBMS & Network Lab (Batch A)', room: 'Lab Block C-201', faculty: 'Prof. Divya P', isLab: true },
+    ],
+  },
+  {
+    day: 'Wednesday',
+    periods: [
+      { periodNumber: 1, time: '09:00 AM - 09:55 AM', subjectId: 'sub-toc', subjectCode: '21CS53', subjectName: 'Theory of Computation', room: 'LH-302', faculty: 'Prof. K. Ramesh' },
+      { periodNumber: 2, time: '10:00 AM - 10:55 AM', subjectId: 'sub-dbms', subjectCode: '21CS51', subjectName: 'Database Management Systems', room: 'LH-302', faculty: 'Prof. Suresh M' },
+      { periodNumber: 3, time: '11:15 AM - 12:10 PM', subjectId: 'sub-os', subjectCode: '21CS52', subjectName: 'Operating Systems', room: 'LH-304', faculty: 'Dr. Ananya Rao' },
+      { periodNumber: 4, time: '12:10 PM - 01:05 PM', subjectId: 'sub-fswd', subjectCode: '21CS56', subjectName: 'Full Stack Web Dev', room: 'LH-302', faculty: 'Prof. Karthik S' },
+      { periodNumber: 5, time: '02:00 PM - 02:55 PM', subjectId: 'sub-cn', subjectCode: '21CS54', subjectName: 'Computer Networks', room: 'LH-305', faculty: 'Prof. Divya P' },
+      { periodNumber: 6, time: '03:00 PM - 03:55 PM', subjectId: 'mini-project', subjectCode: 'PROJ', subjectName: 'Mini Project & Seminar', room: 'LH-302', faculty: 'Prof. Divya P' },
+    ],
+  },
+  {
+    day: 'Thursday',
+    periods: [
+      { periodNumber: 1, time: '09:00 AM - 09:55 AM', subjectId: 'sub-cn', subjectCode: '21CS54', subjectName: 'Computer Networks', room: 'LH-305', faculty: 'Prof. Divya P' },
+      { periodNumber: 2, time: '10:00 AM - 10:55 AM', subjectId: 'sub-os', subjectCode: '21CS52', subjectName: 'Operating Systems', room: 'LH-304', faculty: 'Dr. Ananya Rao' },
+      { periodNumber: 3, time: '11:15 AM - 12:10 PM', subjectId: 'sub-dbms', subjectCode: '21CS51', subjectName: 'Database Management Systems', room: 'LH-302', faculty: 'Prof. Suresh M' },
+      { periodNumber: 4, time: '12:10 PM - 01:05 PM', subjectId: 'sub-toc', subjectCode: '21CS53', subjectName: 'Theory of Computation', room: 'LH-302', faculty: 'Prof. K. Ramesh' },
+      { periodNumber: 5, time: '02:00 PM - 02:55 PM', subjectId: 'sub-fswd', subjectCode: '21CS56', subjectName: 'Full Stack Web Dev Lab', room: 'Lab Block A-102', faculty: 'Prof. Karthik S', isLab: true },
+      { periodNumber: 6, time: '03:00 PM - 03:55 PM', subjectId: 'sub-fswd', subjectCode: '21CS56', subjectName: 'Full Stack Web Dev Lab', room: 'Lab Block A-102', faculty: 'Prof. Karthik S', isLab: true },
+    ],
+  },
+  {
+    day: 'Friday',
+    periods: [
+      { periodNumber: 1, time: '09:00 AM - 09:55 AM', subjectId: 'sub-dbms', subjectCode: '21CS51', subjectName: 'Database Management Systems', room: 'LH-302', faculty: 'Prof. Suresh M' },
+      { periodNumber: 2, time: '10:00 AM - 10:55 AM', subjectId: 'sub-toc', subjectCode: '21CS53', subjectName: 'Theory of Computation', room: 'LH-302', faculty: 'Prof. K. Ramesh' },
+      { periodNumber: 3, time: '11:15 AM - 12:10 PM', subjectId: 'sub-cn', subjectCode: '21CS54', subjectName: 'Computer Networks', room: 'LH-305', faculty: 'Prof. Divya P' },
+      { periodNumber: 4, time: '12:10 PM - 01:05 PM', subjectId: 'sub-os', subjectCode: '21CS52', subjectName: 'Operating Systems', room: 'LH-304', faculty: 'Dr. Ananya Rao' },
+      { periodNumber: 5, time: '02:00 PM - 02:55 PM', subjectId: 'sub-fswd', subjectCode: '21CS56', subjectName: 'Full Stack Web Dev', room: 'LH-302', faculty: 'Prof. Karthik S' },
+      { periodNumber: 6, time: '03:00 PM - 03:55 PM', subjectId: 'training', subjectCode: 'PLACE', subjectName: 'Placement & Aptitude Prep', room: 'Seminar Hall 1', faculty: 'Training Cell' },
+    ],
+  },
+  {
+    day: 'Saturday',
+    periods: [
+      { periodNumber: 1, time: '09:00 AM - 09:55 AM', subjectId: 'sub-os', subjectCode: '21CS52', subjectName: 'Operating Systems', room: 'LH-304', faculty: 'Dr. Ananya Rao' },
+      { periodNumber: 2, time: '10:00 AM - 10:55 AM', subjectId: 'sub-cn', subjectCode: '21CS54', subjectName: 'Computer Networks', room: 'LH-305', faculty: 'Prof. Divya P' },
+      { periodNumber: 3, time: '11:15 AM - 12:10 PM', subjectId: 'sub-toc', subjectCode: '21CS53', subjectName: 'Theory of Computation', room: 'LH-302', faculty: 'Prof. K. Ramesh' },
+      { periodNumber: 4, time: '12:10 PM - 01:05 PM', subjectId: 'sub-dbms', subjectCode: '21CS51', subjectName: 'Database Management Systems', room: 'LH-302', faculty: 'Prof. Suresh M' },
+      { periodNumber: 5, time: '02:00 PM - 02:55 PM', subjectId: 'free', subjectCode: 'SELF', subjectName: 'Self Study / Mentoring', room: 'LH-302', faculty: 'Mentor' },
+      { periodNumber: 6, time: '03:00 PM - 03:55 PM', subjectId: 'free', subjectCode: 'ACT', subjectName: 'Sports & Student Clubs', room: 'Campus Ground', faculty: 'Staff' },
+    ],
   },
 ];

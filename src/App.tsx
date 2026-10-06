@@ -12,7 +12,11 @@ import { TimetableCalendarView } from './components/TimetableCalendarView';
 import { ExamsAssignmentsView } from './components/ExamsAssignmentsView';
 import { AnalyticsChartsView } from './components/AnalyticsChartsView';
 import { AiStudyCoachView } from './components/AiStudyCoachView';
+import { PdfHubView } from './components/PdfHubView';
+import { ModuleQuizView } from './components/ModuleQuizView';
+import { StudyAlertToaster } from './components/StudyAlertToaster';
 import { AuthModal } from './components/AuthModal';
+import { AuthPortalView } from './components/AuthPortalView';
 import { PomodoroTimerModal } from './components/PomodoroTimerModal';
 import { DailyWeeklySummaryModal } from './components/DailyWeeklySummaryModal';
 import { Building2, GraduationCap, Heart } from 'lucide-react';
@@ -23,6 +27,11 @@ function MainLayout() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isPomodoroOpen, setIsPomodoroOpen] = useState(false);
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+
+  // If user is not authenticated, show the dedicated SIT Registration & Login portal
+  if (!user) {
+    return <AuthPortalView />;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
@@ -46,9 +55,14 @@ function MainLayout() {
         {activeTab === 'subjects' && <SubjectsView />}
         {activeTab === 'timetable' && <TimetableCalendarView />}
         {activeTab === 'exams' && <ExamsAssignmentsView />}
+        {activeTab === 'quizzes' && <ModuleQuizView />}
+        {activeTab === 'pdf-hub' && <PdfHubView />}
         {activeTab === 'analytics' && <AnalyticsChartsView />}
         {activeTab === 'ai-coach' && <AiStudyCoachView />}
       </main>
+
+      {/* Study Deadlines & Goal Alert Toaster */}
+      <StudyAlertToaster onNavigateTab={setActiveTab} />
 
       {/* Footer with SIT Mangalore Engineering Campus Information */}
       <footer className="bg-white border-t border-slate-200 py-6 mt-12 text-xs text-slate-500">

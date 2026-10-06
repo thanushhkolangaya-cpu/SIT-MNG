@@ -13,7 +13,8 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useStudy } from '../context/StudyContext';
-import { PriorityLevel } from '../types';
+import { PriorityLevel, PdfDocument } from '../types';
+import { PdfViewerModal } from './PdfViewerModal';
 
 export const ExamsAssignmentsView: React.FC = () => {
   const {
@@ -25,11 +26,18 @@ export const ExamsAssignmentsView: React.FC = () => {
     addAssignment,
     deleteAssignment,
     toggleAssignmentStatus,
+    generateProjectPdfUrl,
+    generateNotesPdfUrl,
   } = useStudy();
 
   const [activeTab, setActiveTab] = useState<'exams' | 'assignments'>('exams');
   const [isAddExamOpen, setIsAddExamOpen] = useState(false);
   const [isAddAsgOpen, setIsAddAsgOpen] = useState(false);
+
+  // PDF Viewer Modal State
+  const [isPdfViewerOpen, setIsPdfViewerOpen] = useState(false);
+  const [viewingDoc, setViewingDoc] = useState<PdfDocument | null>(null);
+  const [pdfDataUrl, setPdfDataUrl] = useState<string | undefined>(undefined);
 
   // Add Exam form state
   const [examSubjectId, setExamSubjectId] = useState(subjects[0]?.id || '');
@@ -228,9 +236,35 @@ export const ExamsAssignmentsView: React.FC = () => {
                 </div>
 
                 <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100">
-                  <span className="text-xs font-bold text-slate-700">
-                    Weightage: {exam.weightageMarks} Marks
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-slate-700">
+                      {exam.weightageMarks} Marks
+                    </span>
+                    <button
+                      onClick={() => {
+                        const url = generateNotesPdfUrl(exam.subjectId);
+                        setViewingDoc({
+                          id: 'exam-pdf-' + exam.id,
+                          title: `${subject?.name || 'Subject'} - Exam Revision Handbook & Formula Sheet`,
+                          subjectId: exam.subjectId,
+                          subjectName: subject?.name,
+                          category: 'notes',
+                          fileSize: '3.1 MB',
+                          pageCount: 24,
+                          uploadDate: new Date().toISOString().split('T')[0],
+                          tags: ['SIT Exam Prep', subject?.code || 'SIT'],
+                          isPreloaded: false,
+                        });
+                        setPdfDataUrl(url);
+                        setIsPdfViewerOpen(true);
+                      }}
+                      className="flex items-center gap-1 px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-bold rounded border border-blue-200 transition-colors cursor-pointer"
+                      title="Open Exam Revision Handbook PDF"
+                    >
+                      <FileText className="w-3 h-3 text-blue-600" />
+                      <span>Exam Notes PDF</span>
+                    </button>
+                  </div>
                   <button
                     onClick={() => deleteExam(exam.id)}
                     className="text-slate-400 hover:text-rose-600 p-1 rounded-lg transition-colors cursor-pointer"
@@ -304,7 +338,32 @@ export const ExamsAssignmentsView: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 self-end sm:self-center shrink-0">
+                  <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                    <button
+                      onClick={() => {
+                        const url = generateProjectPdfUrl(asg.id);
+                        setViewingDoc({
+                          id: 'asg-pdf-' + asg.id,
+                          title: `${asg.title} - Official SIT Project Report`,
+                          subjectId: asg.subjectId,
+                          subjectName: subject?.name,
+                          category: 'project',
+                          fileSize: '2.5 MB',
+                          pageCount: 15,
+                          uploadDate: new Date().toISOString().split('T')[0],
+                          tags: ['SIT Project Report', subject?.code || 'SIT'],
+                          isPreloaded: false,
+                        });
+                        setPdfDataUrl(url);
+                        setIsPdfViewerOpen(true);
+                      }}
+                      className="flex items-center gap-1 px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-bold rounded-lg border border-emerald-200 transition-colors cursor-pointer"
+                      title="Generate Official SIT Project Documentation PDF"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Project PDF</span>
+                    </button>
+
                     <span
                       className={`text-xs font-bold px-2.5 py-1 rounded-full ${
                         isDone
@@ -575,6 +634,18 @@ export const ExamsAssignmentsView: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* PDF Document Viewer Modal */}
+      <PdfViewerModal
+        isOpen={isPdfViewerOpen}
+        onClose={() => {
+          setIsPdfViewerOpen(false);
+          setViewingDoc(null);
+          setPdfDataUrl(undefined);
+        }}
+        document={viewingDoc}
+        pdfDataUrl={pdfDataUrl}
+      />
     </div>
   );
 };
