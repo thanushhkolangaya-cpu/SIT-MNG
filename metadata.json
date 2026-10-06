@@ -1,0 +1,6 @@
+{
+  "name": "SIT Mangalore Study Planner & Tracker",
+  "description": "Smart study scheduling, exam and assignment tracking, predictive analytics, and AI study planning for students of Srinivas Institute of Technology Mangalore.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
